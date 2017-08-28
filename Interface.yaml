@@ -1,5 +1,9 @@
 # This is an interface of this project
-
+self:
+    name: genomon-fisher
+    version: 0.0.1
+    introduction: BWA & Fisher's test, bla bla bla bla
+    author: GenomonProject <https://github.com/genomon-Project>
 inputs:
     REFERENCE:
         description: Reference fast file, with index
@@ -7,3 +11,12 @@ inputs:
         description: File path to the inputs source fastq file
     INPUT02:
         description: File path to the inputs source fastq file
+outputs:
+    SAM:
+        as: result.${INPUT01}_x_${INPUT02}.fastq.sam
+    BAM:
+        as: result.${INPUT01}_x_${INPUT02}.fastq.bam
+    SORTED_BAM:
+        as: result.${INPUT01}_x_${INPUT02}.fastq.sorted.bam
+    FISHER_TXT:
+        as: result.${INPUT01}_x_${INPUT02}.fastq.fisher.txt
