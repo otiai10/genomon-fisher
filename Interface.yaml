@@ -1,0 +1,9 @@
+# This is an interface of this project
+
+inputs:
+    REFERENCE:
+        description: Reference fast file, with index
+    INPUT01:
+        description: File path to the inputs source fastq file
+    INPUT02:
+        description: File path to the inputs source fastq file
