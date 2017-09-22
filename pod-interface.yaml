@@ -5,7 +5,7 @@ self:
     introduction: BWA & Fisher's test, bla bla bla bla
     author: GenomonProject <https://github.com/genomon-Project>
     registry:
-      dockerhub:
+      - service: dockerhub
         namespace: otiai10/genomon-fisher
         url: https://hub.docker.com/r/otiai10/genomon-fisher/
 inputs:
