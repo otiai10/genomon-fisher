@@ -26,7 +26,6 @@ inputs:
         required: true
         form:
           type: file
-parameters:
 outputs:
     SAM:
         as: result.${INPUT01}_x_${INPUT02}.fastq.sam
