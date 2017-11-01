@@ -1,46 +1,64 @@
+#!/bin/bash
 
 echo "[genomon-fisher][0] Checking input parameters (mostly provided as env variables)"
 if [ ! -f "/var/refs/${REFERENCE}" ]; then
     echo "[genomon-fisher][ERROR] REFERENCE file not found: specified with '${REFERENCE}', searched at /var/refs"
     exit 1
 fi
-if [ ! -f "/var/data/${INPUT01}" ]; then
-    echo "[genomon-fisher][ERROR] INPUT01 file not found: specified with '${INPUT01}', searched at /var/data"
+if [ ! -f "/var/data/in/${TUMOR_READ_PAIR}" ]; then
+    echo "[genomon-fisher][ERROR] TUMOR_READ_PAIR file not found: specified with '${TUMOR_READ_PAIR}', searched at /var/data/in"
     exit 1
 fi
-if [ ! -f "/var/data/${INPUT02}" ]; then
-    echo "[genomon-fisher][ERROR] INPUT02 file not found: specified with '${INPUT02}', searched at /var/data"
+if [ ! -f "/var/data/in/${CONTROL_READ_PAIR}" ]; then
+    echo "[genomon-fisher][ERROR] CONTROL_READ_PAIR file not found: specified with '${CONTROL_READ_PAIR}', searched at /var/data/in"
     exit 1
 fi
 
-RESULT_PREFIX=result.${INPUT01}_x_${INPUT02}
+echo "[genomon-fisher][1] >>> Decompress Tumor file"
+mkdir /var/data/in/tumor
+tar -zxvf /var/data/in/${TUMOR_READ_PAIR} -C /var/data/in/tumor
+DIR_TUMOR="/var/data/in/tumor/`ls /var/data/in/tumor`"
+TUMORS=(); i=0; for f in `ls ${DIR_TUMOR}`; do
+    TUMORS[$i]="${DIR_TUMOR}/$f"
+    i=`expr $i + 1`
+done
 
-echo "[genomon-fisher][1] >>> Decompress files if having \".tar.bz2\" extension: '${INPUT01}', '${INPUT02}'"
-if [[ ${INPUT01} == *.tar.bz2 ]]; then
-  tar xvjf /var/data/${INPUT01} --directory /var/data
-  INPUT01=`echo ${INPUT01} | sed "s/\.tar.bz2$//"`
-fi
-if [[ ${INPUT02} == *.tar.bz2 ]]; then
-  tar xvjf /var/data/${INPUT02} --directory /var/data
-  INPUT02=`echo ${INPUT02} | sed "s/\.tar.bz2$//"`
-fi
+echo "[genomon-fisher][2] >>> Decompress Control file"
+mkdir /var/data/in/control
+tar -zxvf /var/data/in/${CONTROL_READ_PAIR} -C /var/data/in/control
+DIR_CONTROL="/var/data/in/control/`ls /var/data/in/control`"
+CONTROLS=(); i=0; for f in `ls ${DIR_CONTROL}`; do
+    CONTROLS[$i]="${DIR_CONTROL}/$f"
+    i=`expr $i + 1`
+done
 
-echo "[genomon-fisher][2] >>> align provided read samples: '${INPUT01}', '${INPUT02}'"
-/bin/bwa mem /var/refs/${REFERENCE} /var/data/${INPUT01} /var/data/${INPUT02} > /var/data/${RESULT_PREFIX}.sam
+echo "[genomon-fisher][3] >>> Align provided TUMOR reads: '${TUMORS[0]}', '${TUMORS[1]}'"
+/bin/bwa mem /var/refs/${REFERENCE} ${TUMORS[0]} ${TUMORS[1]}> /var/data/out/result.tumor.sam
+echo "[genomon-fisher][4] >>> Bamify result TUMOR sam file: 'result.tumor.sam'"
+/bin/samtools view -S -b -h /var/data/out/result.tumor.sam > /var/data/out/result.tumor.bam
+echo "[genomon-fisher][5] >>> Sort TUMOR bam: 'result.tumor.bam'"
+/bin/samtools sort /var/data/out/result.tumor.bam > /var/data/out/result.tumor.sorted.bam
 
-echo "[genomon-fisher][3] >>> bamify result sam file: '${RESULT_PREFIX}.sam'"
-/bin/samtools view -S -b -h /var/data/${RESULT_PREFIX}.sam > /var/data/${RESULT_PREFIX}.bam
+echo "[genomon-fisher][6] >>> Align provided CONTROL reads: '${CONTROLS[0]}', '${CONTROLS[1]}'"
+/bin/bwa mem /var/refs/${REFERENCE} ${CONTROLS[0]} ${CONTROLS[1]}> /var/data/out/result.control.sam
+echo "[genomon-fisher][7] >>> Bamify result CONTROL sam file: 'result.control.sam'"
+/bin/samtools view -S -b -h /var/data/out/result.control.sam > /var/data/out/result.control.bam
+echo "[genomon-fisher][8] >>> Sort CONTROL bam: 'result.control.bam'"
+/bin/samtools sort /var/data/out/result.control.bam > /var/data/out/result.control.sorted.bam
 
-echo "[genomon-fisher][4] >>> sort bam: '${RESULT_PREFIX}.bam'"
-/bin/samtools sort /var/data/${RESULT_PREFIX}.bam > /var/data/${RESULT_PREFIX}.sorted.bam
 
-echo "[genomon-fisher][5] >>> execute Fisher's test: '${RESULT_PREFIX}.sorted.bam'"
-/usr/bin/fisher single \
-	-o /var/data/${RESULT_PREFIX}.fisher.txt \
+echo "[genomon-fisher][9] >>> Execute Fisher's test: 'result.tumor.sorted.bam' / 'result.control.sorted.bam'"
+/usr/bin/fisher comparison \
+	-o /var/data/out/result.fisher.txt \
 	--ref_fa /var/refs/$REFERENCE \
-	-1 /var/data/${RESULT_PREFIX}.sorted.bam \
+	-1 /var/data/result.tumor.sorted.bam \
+  -2 /var/data/result.control.sorted.bam \
 	--samtools_path /bin/samtools \
-	--min_depth 8 --base_quality 15 --min_variant_read 4 --min_allele_freq 0.02 --post_10_q 0.02 \
+	--min_depth 8 \
+  --base_quality 15 \
+  --min_variant_read 4 \
+  --min_allele_freq 0.02 \
+  --post_10_q 0.02 \
 	--samtools_params "-q 20 -BQ0 -d 10000000 --ff UNMAP,SECONDARY,QCFAIL,DUP"
 
-echo "[genomon-fisher][6] >>> Everything completed, bye."
+echo "[genomon-fisher][6] >>> Congratulations! Everything has been completed successfully. Bye, see you again!"

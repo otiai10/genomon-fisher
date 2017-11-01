@@ -1,8 +1,8 @@
 # This is an interface of this project
 self:
     name: otiai10/genomon-fisher
-    version: 0.0.1
-    introduction: BWA & Fisher's test, bla bla bla bla
+    version: 0.0.3
+    introduction: Alignment by using bwa (bwa mem) and Mutation-call by using GenomonFisher (https://github.com/Genomon-Project/GenomonFisher)
     author: GenomonProject <https://github.com/genomon-Project>
     registry:
       - service: dockerhub
@@ -10,28 +10,30 @@ self:
         url: https://hub.docker.com/r/otiai10/genomon-fisher/
 inputs:
     REFERENCE:
-        description: Reference version
+        description: Reference version (GRCh37 for default)
         required: true
         form:
           type: select
           options:
             - GRCh37
-    INPUT01:
-        description: File path to the inputs source fastq file
+    TUMOR_READ_PAIR:
+        description: [tar.gz] Tumor sample read pair, compressed folder including 2 FASTQ files on the top level.
         required: true
         form:
           type: file
-    INPUT02:
-        description: File path to the inputs source fastq file
+          accept: application/gzip
+    CONTROL_READ_PAIR:
+        description: [tar.gz] Control sample read pair, compressed folder including 2 FASTQ files on the top level.
         required: true
         form:
           type: file
+          accept: application/gzip
 outputs:
     SAM:
-        as: result.${INPUT01}_x_${INPUT02}.fastq.sam
+        as: result.tumor.sam
     BAM:
-        as: result.${INPUT01}_x_${INPUT02}.fastq.bam
+        as: result.tumor.bam
     SORTED_BAM:
-        as: result.${INPUT01}_x_${INPUT02}.fastq.sorted.bam
+        as: result.tumor.sorted.bam
     FISHER_TXT:
-        as: result.${INPUT01}_x_${INPUT02}.fastq.fisher.txt
+        as: result.fisher.txt
