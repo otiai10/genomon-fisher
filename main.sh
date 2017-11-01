@@ -14,6 +14,7 @@ TUMORS=(); i=0; for f in `ls ${DIR_TUMOR} | sort`; do
     TUMORS[$i]="${DIR_TUMOR}/$f"
     i=`expr $i + 1`
 done
+echo ${TUMORS[0]} ${TUMORS[1]}
 
 # Decompress Control files
 mkdir /var/data/in/control
@@ -23,6 +24,7 @@ CONTROLS=(); i=0; for f in `ls ${DIR_CONTROL} | sort`; do
     CONTROLS[$i]="${DIR_CONTROL}/$f"
     i=`expr $i + 1`
 done
+echo ${CONTROLS[0]} ${CONTROLS[1]}
 
 # Align provided TUMOR reads
 /bin/bwa mem /var/refs/${REFERENCE} ${TUMORS[0]} ${TUMORS[1]} > /var/data/out/result.tumor.sam
@@ -42,8 +44,8 @@ done
 /usr/bin/fisher comparison \
   -o /var/data/out/result.fisher.txt \
   --ref_fa /var/refs/$REFERENCE \
-  -1 /var/data/result.tumor.sorted.bam \
-  -2 /var/data/result.control.sorted.bam \
+  -1 /var/data/out/result.tumor.sorted.bam \
+  -2 /var/data/out/result.control.sorted.bam \
   --samtools_path /bin/samtools \
   --min_depth 8 \
   --base_quality 15 \
