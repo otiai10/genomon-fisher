@@ -49,16 +49,16 @@ echo "[genomon-fisher][8] >>> Sort CONTROL bam: 'result.control.bam'"
 
 echo "[genomon-fisher][9] >>> Execute Fisher's test: 'result.tumor.sorted.bam' / 'result.control.sorted.bam'"
 /usr/bin/fisher comparison \
-	-o /var/data/out/result.fisher.txt \
-	--ref_fa /var/refs/$REFERENCE \
-	-1 /var/data/result.tumor.sorted.bam \
+  -o /var/data/out/result.fisher.txt \
+  --ref_fa /var/refs/$REFERENCE \
+  -1 /var/data/result.tumor.sorted.bam \
   -2 /var/data/result.control.sorted.bam \
-	--samtools_path /bin/samtools \
-	--min_depth 8 \
+  --samtools_path /bin/samtools \
+  --min_depth 8 \
   --base_quality 15 \
   --min_variant_read 4 \
-  --min_allele_freq 0.02 \
-  --post_10_q 0.02 \
-	--samtools_params "-q 20 -BQ0 -d 10000000 --ff UNMAP,SECONDARY,QCFAIL,DUP"
+  --max_allele_freq 0.1 \
+  --fisher_value 0.1 \
+  --samtools_params "-q 20 -BQ0 -d 10000000 --ff UNMAP,SECONDARY,QCFAIL,DUP"
 
 echo "[genomon-fisher][6] >>> Congratulations! Everything has been completed successfully. Bye, see you again!"
