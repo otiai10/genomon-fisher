@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Catch errors and exit immediately
-set -xv
-set -o pipefail
-
 echo "[genomon-fisher][0] Checking input parameters (mostly provided as env variables)"
 if [ ! -f "/var/refs/${REFERENCE}" ]; then
     echo "[genomon-fisher][ERROR] REFERENCE file not found: specified with '${REFERENCE}', searched at /var/refs"
@@ -20,7 +16,7 @@ fi
 
 echo "[genomon-fisher][1] >>> Decompress Tumor file"
 mkdir /var/data/in/tumor
-tar -zxvf /var/data/in/${TUMOR_READ_PAIR} -C /var/data/in/tumor
+tar -zxvf /var/data/in/${TUMOR_READ_PAIR} -C /var/data/in/tumor || exit $?
 DIR_TUMOR="/var/data/in/tumor/`ls /var/data/in/tumor`"
 TUMORS=(); i=0; for f in `ls ${DIR_TUMOR}`; do
     TUMORS[$i]="${DIR_TUMOR}/$f"
@@ -29,7 +25,7 @@ done
 
 echo "[genomon-fisher][2] >>> Decompress Control file"
 mkdir /var/data/in/control
-tar -zxvf /var/data/in/${CONTROL_READ_PAIR} -C /var/data/in/control
+tar -zxvf /var/data/in/${CONTROL_READ_PAIR} -C /var/data/in/control || exit $?
 DIR_CONTROL="/var/data/in/control/`ls /var/data/in/control`"
 CONTROLS=(); i=0; for f in `ls ${DIR_CONTROL}`; do
     CONTROLS[$i]="${DIR_CONTROL}/$f"
@@ -63,6 +59,7 @@ echo "[genomon-fisher][9] >>> Execute Fisher's test: 'result.tumor.sorted.bam' /
   --min_variant_read 4 \
   --max_allele_freq 0.1 \
   --fisher_value 0.1 \
-  --samtools_params "-q 20 -BQ0 -d 10000000 --ff UNMAP,SECONDARY,QCFAIL,DUP"
+  --samtools_params "-q 20 -BQ0 -d 10000000 --ff UNMAP,SECONDARY,QCFAIL,DUP" \
+  || exit $?
 
 echo "[genomon-fisher][6] >>> Congratulations! Everything has been completed successfully. Bye, see you again!"
