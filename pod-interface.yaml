@@ -5,29 +5,29 @@ self:
     introduction: Alignment by using bwa (bwa mem) and Mutation-call by using GenomonFisher (https://github.com/Genomon-Project/GenomonFisher)
     author: GenomonProject <https://github.com/genomon-Project>
     registry:
-      - service: dockerhub
-        namespace: otiai10/genomon-fisher
-        url: https://hub.docker.com/r/otiai10/genomon-fisher/
+        - service: dockerhub
+          namespace: otiai10/genomon-fisher
+          url: https://hub.docker.com/r/otiai10/genomon-fisher/
 inputs:
     REFERENCE:
         description: Reference version (GRCh37 for default)
         required: true
         form:
-          type: select
-          options:
-            - GRCh37
+            type: select
+            options:
+                - GRCh37
     TUMOR_READ_PAIR:
-        description: [tar.gz] Tumor sample read pair, compressed folder including 2 FASTQ files on the top level.
+        description: Tumor sample read pair, compressed (tar.gz) folder including 2 FASTQ files on the top level.
         required: true
         form:
-          type: file
-          accept: application/gzip
+            type: file
+            accept: application/gzip
     CONTROL_READ_PAIR:
-        description: [tar.gz] Control sample read pair, compressed folder including 2 FASTQ files on the top level.
+        description: Control sample read pair, compressed (tar.gz) folder including 2 FASTQ files on the top level.
         required: true
         form:
-          type: file
-          accept: application/gzip
+            type: file
+            accept: application/gzip
 outputs:
     SAM:
         as: result.tumor.sam
