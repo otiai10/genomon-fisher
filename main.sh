@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Catch errors and exit immediately
+set -xv
+set -o pipefail
+
 echo "[genomon-fisher][0] Checking input parameters (mostly provided as env variables)"
 if [ ! -f "/var/refs/${REFERENCE}" ]; then
     echo "[genomon-fisher][ERROR] REFERENCE file not found: specified with '${REFERENCE}', searched at /var/refs"
