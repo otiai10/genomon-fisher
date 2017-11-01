@@ -1,8 +1,8 @@
 FROM centos
 
 # basic packages
-RUN yum update && \
-    yum install -y \
+RUN yum update yum
+RUN yum install -y \
     gcc \
     make \
     git \
