@@ -25,14 +25,14 @@ CONTROLS=(); i=0; for f in `ls ${DIR_CONTROL} | sort`; do
 done
 
 # Align provided TUMOR reads
-/bin/bwa mem /var/refs/${REFERENCE} ${TUMORS[0]} ${TUMORS[1]}> /var/data/out/result.tumor.sam
+/bin/bwa mem /var/refs/${REFERENCE} ${TUMORS[0]} ${TUMORS[1]} > /var/data/out/result.tumor.sam
 # Bamify result TUMOR sam file
 /bin/samtools view -S -b -h /var/data/out/result.tumor.sam > /var/data/out/result.tumor.bam
 # Sort TUMOR bam
 /bin/samtools sort /var/data/out/result.tumor.bam > /var/data/out/result.tumor.sorted.bam
 
 # Align provided CONTROL reads
-/bin/bwa mem /var/refs/${REFERENCE} ${CONTROLS[0]} ${CONTROLS[1]}> /var/data/out/result.control.sam
+/bin/bwa mem /var/refs/${REFERENCE} ${CONTROLS[0]} ${CONTROLS[1]} > /var/data/out/result.control.sam
 # Bamify result CONTROL sam file
 /bin/samtools view -S -b -h /var/data/out/result.control.sam > /var/data/out/result.control.bam
 # Sort CONTROL bam
