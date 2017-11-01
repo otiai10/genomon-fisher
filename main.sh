@@ -8,7 +8,7 @@ ls /var/data/in/${CONTROL_READ_PAIR}
 
 # Decompress Tumor files
 mkdir /var/data/in/tumor
-tar -zxvf /var/data/in/${TUMOR_READ_PAIR} -C /var/data/in/tumor || exit $?
+tar -zxvf /var/data/in/${TUMOR_READ_PAIR} -C /var/data/in/tumor
 DIR_TUMOR="/var/data/in/tumor/`ls /var/data/in/tumor`"
 TUMORS=(); i=0; for f in `ls ${DIR_TUMOR} | sort`; do
     TUMORS[$i]="${DIR_TUMOR}/$f"
@@ -17,7 +17,7 @@ done
 
 # Decompress Control files
 mkdir /var/data/in/control
-tar -zxvf /var/data/in/${CONTROL_READ_PAIR} -C /var/data/in/control || exit $?
+tar -zxvf /var/data/in/${CONTROL_READ_PAIR} -C /var/data/in/control
 DIR_CONTROL="/var/data/in/control/`ls /var/data/in/control`"
 CONTROLS=(); i=0; for f in `ls ${DIR_CONTROL} | sort`; do
     CONTROLS[$i]="${DIR_CONTROL}/$f"
